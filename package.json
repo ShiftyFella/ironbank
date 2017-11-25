@@ -1,0 +1,24 @@
+{
+  "name": "ironbank",
+  "version": "1.0.0",
+  "description": "Iron Bank MAPD713 Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShiftyFella/ironbank.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ShiftyFella/ironbank/issues"
+  },
+  "homepage": "https://github.com/ShiftyFella/ironbank#readme",
+  "dependencies": {
+    "mongoose": "^4.13.5",
+    "restify": "^6.3.4"
+  }
+}
