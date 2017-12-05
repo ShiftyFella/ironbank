@@ -19,6 +19,7 @@
   "homepage": "https://github.com/ShiftyFella/ironbank#readme",
   "dependencies": {
     "mongoose": "^4.13.5",
-    "restify": "^6.3.4"
+    "restify": "4.1.1",
+    "save":"2.3.1"
   }
 }
