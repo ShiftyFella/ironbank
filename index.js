@@ -1,41 +1,34 @@
-//test DB Connection
+//PRE REQUISITES
+var mongoose = require('mongoose');
+var restify = require('restify');
 
-// var mongoose = require('mongoose');
+//Database models
+var Tellers = require("./models/Teller");
+var Clients = require("./models/Client");
 
-// var mongoDB = 'mongodb://localhost/test'; //connection string for hosted MongoDB
+//connection string for hosted MongoDB
+var mongoDB = 'mongodb://ironmin:ironbankdatabasetest@cluster0-shard-00-00-itnt9.mongodb.net:27017,cluster0-shard-00-01-itnt9.mongodb.net:27017,cluster0-shard-00-02-itnt9.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin';
 
-// mongoose.connect(mongoDB, {useMongoClient: true});
-
-// var db = mongoose.connection;
-// db.on('error', console.error.bind(console, 'connection error:'));
-// db.once('open', function() {
-//     console.log("DB Connection established");
-// });
-
+//SERVER INFO CONFIG
 var SERVER_NAME = 'ironbank-api';
 var PORT = 8000;
 var HOST = '127.0.0.1';
 
-//request counters
-var getCounter = 0;
-var postCounter = 0;
+// Create the restify server
+server = restify.createServer({ name: SERVER_NAME });
 
-var restify = require('restify')
+//Connect to Hosted DB
+mongoose.connect(mongoDB, {useMongoClient: true});
+var db = mongoose.connection; //store Database connection
 
-    // Create the restify server
-    , server = restify.createServer({ name: SERVER_NAME })
-
-    // Get a persistence engine for the clients
-    , clientsSave = require('save')('clients')
-
-
-
-server.listen(PORT, HOST, function () {
-    console.log('Server %s listening at %s', server.name, server.url)
-    console.log('Endpoints:')
-    console.log(server.url + '/clients')
-    console.log(server.url + '/clients/:id')
-})
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+    //IF DB Connection succesfull start server at predifined parametrs
+    server.listen(PORT, HOST, function () {
+        console.log("Server stared at %s", server.url);
+    });
+    console.log("DB Connection established");
+});
 
 server
     // Allow the use of POST
@@ -43,6 +36,9 @@ server
 
     // Maps req.body to req.params so there is no switching between them
     .use(restify.bodyParser())
+
+
+//POST METHODS
 
 //POST add new Teller
 server.post('/api/tellers', function (req, res, next) {
@@ -53,7 +49,6 @@ server.post('/api/tellers', function (req, res, next) {
 
     teller.save(function (err) {
         if (err) return handleError(err);
-
         res.send(201, teller);
     });
     next();
