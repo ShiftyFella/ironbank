@@ -12,7 +12,7 @@ var mongoDB = 'mongodb://ironmin:ironbankdatabasetest@cluster0-shard-00-00-itnt9
 //SERVER INFO CONFIG
 var SERVER_NAME = 'ironbank-api';
 var PORT = 8000;
-var HOST = '127.0.0.1';
+var HOST = 'https://ironbank-test.herokuapp.com';
 
 // Create the restify server
 server = restify.createServer({ name: SERVER_NAME });
