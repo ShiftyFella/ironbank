@@ -30,15 +30,14 @@ db.once('open', function() {
     console.log("DB Connection established");
 });
 
-server
-    // Allow the use of POST
-    .use(restify.fullResponse())
+// Allow the use of POST
+        server.use(restify.fullResponse());
 
     // Maps req.body to req.params so there is no switching between them
-    .use(restify.bodyParser())
+    server.use(restify.bodyParser());
 
 
-//POST METHODS
+//**************** POST METHODS ******************************
 
 //POST add new Teller
 server.post('/api/tellers', function (req, res, next) {
@@ -49,6 +48,7 @@ server.post('/api/tellers', function (req, res, next) {
 
     teller.save(function (err) {
         if (err) return handleError(err);
+
         res.send(201, teller);
     });
     next();
@@ -57,51 +57,36 @@ server.post('/api/tellers', function (req, res, next) {
 //POST add new Client by teller
 server.post('/api/:teller_id/clients', function (req, res, next) {
     Tellers.
-        findOne({ _id: req.params.teller_id}).
-        exec (function (err,tellers) {
-            var client1 = new Clients({
-                firstName: req.params.firstname,
-                lastName: req.params.lastname,
-                currentAddress: " ",
-                teller: req.params.teller_id
-            });
-
-            client1.save(function (err) {
-                if (err) {
-                    console.log(err);
-                    console.log(client1);
-                    console.log(tellers);
-                    return handleError(err);
-                }
-
-                res.send(201,client1);
-            });
+    findOne({ _id: req.params.teller_id}).
+    exec (function (err,tellers) {
+        var client1 = new Clients({
+            firstName: req.params.firstname,
+            lastName: req.params.lastname,
+            currentAddress: " ",
+            teller: req.params.teller_id
         });
+
+        client1.save(function (err) {
+            if (err) {
+                console.log(err);
+                console.log(client1);
+                console.log(tellers);
+                return handleError(err);
+            }
+
+            res.send(201,client1);
+        });
+    });
     next();
 
 });
 
 //POST add new transaction
 server.post('/api/clients/:client_id/transactions', function (req, res, next) {
-    //Clients.
-    //    findOne({ _id: req.params.client_id}).
-    //    exec (function (err, client) {
-    //        var transaction = new {
-    //            _id: new mongoose.Types.ObjectId(),
-    //            transactionName: req.params.transaction_name,
-    //            transactionDate: Date.now()
-    //        };
-    //        client.transactions.push(transaction);
-    //        client.save(function (err, newTransaction) {
-    //            if (err) return handleError(err);
-    //            res.send(201, newTransaction);
-    //        });
-    //    });
-
     Clients.findOneAndUpdate({_id: req.params.client_id}, {$push: {"transactions":
-        {"_id": new mongoose.Types.ObjectId(),
-            "transactionName": req.params.transaction_name,
-            "transactionDate": Date.now()}}},
+            {"_id": new mongoose.Types.ObjectId(),
+                "transactionName": req.params.transaction_name,
+                "transactionDate": Date.now()}}},
         {new: true},
         function(err, newTR) {
             if (err) return handleError(err);
@@ -111,87 +96,109 @@ server.post('/api/clients/:client_id/transactions', function (req, res, next) {
     next();
 });
 
-// Get all clients in the system
-server.get('/clients', function (req, res, next) {
-    console.log('>>>' + server.url + '/clients: recieved GET request')
+//******************* GET METHODS **********************
 
-    // Find every entity within the given collection
-    clientsSave.find({}, function (error, clients) {
+// GET list of Tellers, returns only first and last name
+server.get('/api/tellers', function (req, res, next) {
+    Tellers.
+    find({}).
+    select('firstName lastName').
+    exec (function (err, tellers) {
+        res.send(tellers);
+    });
+    next();
+});
 
-        // Return all of the clients in the system
-        console.log('<<<' + server.url + '/clients: sending response')
-        res.send(clients)
-        getCounter++;
-        console.log('Processed request count --> sendGet: ' + getCounter + ', sendPost: ' + postCounter)
-    })
-})
+//GET returns teller by id
+server.get('/api/tellers/:teller_id', function (req,res, next) {
+    Tellers.
+    findOne({ _id: req.params.teller_id }).
+    select('firstName lastName').
+    exec (function (err, teller) {
+        res.send(teller);
+    });
+    next();
+});
 
-// Get a particular client by their clients id
-server.get('/clients/:id', function (req, res, next) {
-    console.log('>>>' + server.url + '/clients:id: recieved GET request')
+//GET returns list of clients first and last names for selected teller
+server.get('/api/:teller_id/clients', function (req, res, next) {
+    Clients.
+    find({ teller: req.params.teller_id}).
+    select('firstName lastName').
+    exec (function (err, clients) {
+        res.send(clients);
+    });
+    next();
+});
 
-    // Find a single client by their id within save
-    clientsSave.findOne({ _id: req.params.id }, function (error, client) {
+//GET returns client info for selected teller
+server.get('/api/:teller_id/clients/:client_id', function (req, res, next) {
+    Clients.
+    findOne({ _id: req.params.client_id }).
+    where('teller').equals(req.params.teller_id).
+    select('firstName lastName currentAddress contactInfo accountStatus').
+    exec (function (err, client) {
+        res.send(client);
+    });
+    next();
+});
 
-        // If there are any errors, pass them to next in the correct format
-        if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
+//get list of all clients
+server.get('/api/clients', function (req, res, next) {
+    Clients.
+    find({}).
+    select('firstName lastName').
+    exec (function (err, clients) {
+        res.send(clients);
+    });
+    next();
+});
 
-        if (client) {
-            // Send the client if no issues
-            console.log('<<<' + server.url + '/clients:id: sending response')
-            res.send(client)
-            getCounter++;
-            console.log('Processed request count --> sendGet: ' + getCounter + ', sendPost: ' + postCounter)
-        } else {
-            // Send 404 header if the client doesn't exist
-            res.send(404)
-        }
-    })
-})
+//GET client info by id
+server.get('/api/clients/:client_id', function (req, res, next) {
+    Clients.
+    find({ _id: req.params.client_id}).
+    populate('teller', 'firstName lastName').
+    exec (function (err, client) {
+        res.send(client);
+    });
+    next();
+});
 
-// Create a new client
-server.post('/clients', function (req, res, next) {
-    console.log('>>>' + server.url + '/clients: recieved POST request')
-    // Make sure name is defined
-    if (req.params.name === undefined) {
-        // If there are any errors, pass them to next in the correct format
-        return next(new restify.InvalidArgumentError('name must be supplied'))
-    }
-    if (req.params.price === undefined) {
-        // If there are any errors, pass them to next in the correct format
-        return next(new restify.InvalidArgumentError('price must be supplied'))
-    }
-    var newClient = {
-        name: req.params.name,
-        price: req.params.price
-    }
+//GET returns list of transactions for selected client
+server.get('/api/clients/:client_id/transactions', function (req, res, next) {
+    Clients.
+    find({ _id: req.params.client_id}).
+    select('transactions').
+    exec (function (err, transactions) {
+        res.json(transactions);
+    });
+    next();
+});
 
-    // Create the client using the persistence engine
-    clientsSave.create(newClient, function (error, client) {
+//GET returns transaction info for selected transaction from selected client
+server.get('/api/clients/:client_id/transactions/:transaction_id', function (req, res, next) {
+    Clients.
+    findOne({ _id: req.params.client_id}).
+    where({'transactions._id': req.params.transaction_id}).
+    select('transactions.$').
+    exec(function (err, tr) {
+        res.send(tr);
+    });
+    next();
+});
 
-        // If there are any errors, pass them to next in the correct format
-        if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
-
-        // Send the client if no issues
-        console.log('<<<' + server.url + '/clients: sending response')
-        res.send(201, client)
-        postCounter++;
-        console.log('Processed request count --> sendGet: ' + getCounter + ', sendPost: ' + postCounter)
-    })
-})
-
-/* Updated by Akshit */
 //PUT Clients request to terminate his acc
 server.put('/api/clients/:client_id', function (req, res, next) {
     Clients.
-        findOneAndUpdate({_id: req.params.client_id},
-            {$set: {accountStatus: "ToBeTerminated"}},
-            {new: true},
-            function(err, client){
-                if (err) return handleError(err);
+    findOneAndUpdate({_id: req.params.client_id},
+        {$set: {accountStatus: "ToBeTerminated"}},
+        {new: true},
+        function(err, client){
+            if (err) return handleError(err);
 
-                res.send(201, client);
-            })
+            res.send(201, client);
+        })
 });
 
 //DELETE client that requested to be deleted
@@ -203,101 +210,5 @@ server.del('/api/:teller_id/clients/:client_id', function (req, res, next) {
     exec (function (err, client) {
         res.send(201, client);
     });
-    next();
-});
-
-// GET list of Tellers, returns only first and last name
-server.get('/api/tellers', function (req, res, next) {
-    Tellers.
-        find({}).
-        select('firstName lastName').
-        exec (function (err, tellers) {
-        res.send(tellers);
-    });
-    next();
-});
-//GET returns teller by id
-server.get('/api/tellers/:teller_id', function (req,res, next) {
-    Tellers.
-        findOne({ _id: req.params.teller_id }).
-        select('firstName lastName').
-        exec (function (err, teller) {
-            res.send(teller);
-    });
-    next();
-});
-
-//GET returns list of clients first and last names for selected teller
-server.get('/api/:teller_id/clients', function (req, res, next) {
-    Clients.
-        find({ teller: req.params.teller_id}).
-        select('firstName lastName').
-        exec (function (err, clients) {
-            res.send(clients);
-        });
-    next();
-});
-
-//GET returns client info for selected teller
-server.get('/api/:teller_id/clients/:client_id', function (req, res, next) {
-    Clients.
-        findOne({ _id: req.params.client_id }).
-        where('teller').equals(req.params.teller_id).
-        select('firstName lastName currentAddress contactInfo accountStatus').
-        exec (function (err, client) {
-            res.send(client);
-        });
-    next();
-});
-
-
-//get list of all clients
-server.get('/api/clients', function (req, res, next) {
-    Clients.
-        find({}).
-        exec (function (err, clients) {
-            res.send(clients);
-        });
-    next();
-});
-
-
-//GET client info by id
-server.get('/api/clients/:client_id', function (req, res, next) {
-    Clients.
-        find({ _id: req.params.client_id}).
-        exec (function (err, client) {
-            res.send(client);
-        });
-    next();
-});
-
-//GET returns list of transactions for selected client
-server.get('/api/clients/:client_id/transactions', function (req, res, next) {
-    Clients.
-        find({ _id: req.params.client_id}).
-        select('transactions').
-        exec (function (err, transactions) {
-            res.send(transactions);
-        }); 
-    next();
-});
-
-//GET returns transaction info for selected transaction from selected client
-server.get('/api/clients/:client_id/transactions/:transaction_id', function (req, res, next) {
-    Clients.
-        //findOne({ _id: req.params.client_id}).
-        //where('transactions._id').equals(req.params.transaction_id).
-        //select('transactions').
-        //exec (function (err, transaction) {
-        //    var result = transaction.transactions.filter(function(value){return value._id==req.params.transaction_id});
-        //    res.send(result);
-        //});
-        findOne({ _id: req.params.client_id}).
-        where({'transactions._id': req.params.transaction_id}).
-        select('transactions.$').
-        exec(function (err, tr) {
-            res.send(tr);
-        });
     next();
 });
