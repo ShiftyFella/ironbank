@@ -4,7 +4,7 @@
   "description": "Iron Bank MAPD713 Project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/ShiftyFella/ironbank#readme",
   "dependencies": {
-    "mongoose": "^4.13.5",
-    "restify": "4.1.1",
-    "save":"2.3.1"
+    "mongoose": "^4.13.7",
+    "restify": "^4.1.1",
+    "save": "^2.3.1"
   }
 }

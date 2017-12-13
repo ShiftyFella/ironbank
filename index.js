@@ -11,8 +11,8 @@ var mongoDB = 'mongodb://ironmin:ironbankdatabasetest@cluster0-shard-00-00-itnt9
 
 //SERVER INFO CONFIG
 var SERVER_NAME = 'ironbank-api';
-var PORT = 8000;
-var HOST = 'https://ironbank-test.herokuapp.com';
+var PORT = process.env.PORT;
+//var HOST = 'https://ironbank-test.herokuapp.com';
 
 // Create the restify server
 server = restify.createServer({ name: SERVER_NAME });
@@ -24,7 +24,7 @@ var db = mongoose.connection; //store Database connection
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
     //IF DB Connection succesfull start server at predifined parametrs
-    server.listen(PORT, HOST, function () {
+    server.listen(PORT, function () {
         console.log("Server stared at %s", server.url);
     });
     console.log("DB Connection established");
