@@ -56,7 +56,7 @@ server.post('/api/tellers', function (req, res, next) {
 });
 
 //POST add new Client by teller
-server.post('/api/:teller_id/clients', function (req, res, next) {
+server.post('/api/tellers/:teller_id/clients', function (req, res, next) {
     Tellers.
     findOne({ _id: req.params.teller_id}).
     exec (function (err,tellers) {
@@ -122,7 +122,7 @@ server.get('/api/tellers/:teller_id', function (req,res, next) {
 });
 
 //GET returns list of clients first and last names for selected teller
-server.get('/api/:teller_id/clients', function (req, res, next) {
+server.get('/api/tellers/:teller_id/clients', function (req, res, next) {
     Clients.
     find({ teller: req.params.teller_id}).
     select('firstName lastName').
@@ -133,7 +133,7 @@ server.get('/api/:teller_id/clients', function (req, res, next) {
 });
 
 //GET returns client info for selected teller
-server.get('/api/:teller_id/clients/:client_id', function (req, res, next) {
+server.get('/api/tellers/:teller_id/clients/:client_id', function (req, res, next) {
     Clients.
     findOne({ _id: req.params.client_id }).
     where('teller').equals(req.params.teller_id).
@@ -145,7 +145,7 @@ server.get('/api/:teller_id/clients/:client_id', function (req, res, next) {
 });
 
 //GET return list of clients that requested to be terminated
-server.get('/api/:teller_id/requests', function (req, res, next) {
+server.get('/api/tellers/:teller_id/requests', function (req, res, next) {
     Clients.
     find({}).
     where('teller').equals(req.params.teller_id).
@@ -216,7 +216,7 @@ server.put('/api/clients/:client_id', function (req, res, next) {
 });
 
 //DELETE client that requested to be deleted
-server.del('/api/:teller_id/clients/:client_id', function (req, res, next) {
+server.del('/api/tellers/:teller_id/clients/:client_id', function (req, res, next) {
     Clients.
     findOneAndRemove({ _id: req.params.client_id }).
     where('teller').equals(req.params.teller_id).
