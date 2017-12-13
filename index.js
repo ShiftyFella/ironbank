@@ -143,6 +143,19 @@ server.get('/api/:teller_id/clients/:client_id', function (req, res, next) {
     next();
 });
 
+//GET return list of clients that requested to be terminated
+server.get('/api/:teller_id/requests', function (req, res, next) {
+    Clients.
+    find({}).
+    where('teller').equals(req.params.teller_id).
+    where('accountStatus').equals("ToBeTerminated").
+    select('firstName lastName').
+    exec (function (err, clients) {
+        res.send(clients);
+    });
+    next();
+});
+
 //get list of all clients
 server.get('/api/clients', function (req, res, next) {
     Clients.
