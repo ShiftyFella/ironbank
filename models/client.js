@@ -7,9 +7,9 @@ var clientSchema = new Schema({
     lastName: {type: String, required: true},
     currentAddress: {type: String, required: true},
     contactInfo: {email: String, telephone: Number},
-    tellerInfo: {type: Schema.ObjectId, ref: 'Teller', required: true},
+    teller: {type: Schema.ObjectId, ref: 'Teller', required: true},
     accountStatus: {type: String, requred: true, enum: ['Active', 'Suspended', 'Pending', 'ToBeTerminated'], default: "Pending"},
-    transactions: [{transactionName: String, transactionDate: Date}]
+    transactions: [{_id: Schema.Types.ObjectId, transactionName: String, transactionDate: Date}]
 });
 
 var Client = mongoose.model('Client', clientSchema);
