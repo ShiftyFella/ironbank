@@ -3,8 +3,8 @@ var mongoose = require('mongoose');
 var restify = require('restify');
 
 //Database models
-var Tellers = require("./models/Teller");
-var Clients = require("./models/Client");
+var Tellers = require("/models/Teller");
+var Clients = require("/models/Client");
 
 //connection string for hosted MongoDB
 var mongoDB = 'mongodb://ironmin:ironbankdatabasetest@cluster0-shard-00-00-itnt9.mongodb.net:27017,cluster0-shard-00-01-itnt9.mongodb.net:27017,cluster0-shard-00-02-itnt9.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin';
