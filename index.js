@@ -210,8 +210,7 @@ server.put('/api/clients/:client_id', function (req, res, next) {
         {new: true},
         function(err, client){
             if (err) return handleError(err);
-
-            res.send(201, client);
+            res.send(200, client);
         })
 });
 
@@ -222,7 +221,12 @@ server.del('/api/tellers/:teller_id/clients/:client_id', function (req, res, nex
     where('teller').equals(req.params.teller_id).
     where('accountStatus').equals("ToBeTerminated").
     exec (function (err, client) {
-        res.send(201, client);
+        if (client != null)
+            res.send(200, client);
+        else
+            res.send(204);
     });
     next();
 });
+
+module.exports = server;
