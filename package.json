@@ -4,7 +4,8 @@
   "description": "Iron Bank MAPD713 Project",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "preinstall": "npm install pm2 -g",
+    "start": "pm2 start index.js -i max --attach"
     "test": "mocha --timeout 10000"
   },
   "repository": {
@@ -20,7 +21,7 @@
   "homepage": "https://github.com/ShiftyFella/ironbank#readme",
   "dependencies": {
     "mongoose": "^4.13.7",
-    "restify": "4.1.1",
+    "restify": "^4.1.1",
     "save": "^2.3.1"
   },
   "devDependencies": {
