@@ -44,7 +44,9 @@ db.once('open', function() {
 server.post('/api/tellers', function (req, res, next) {
     var teller = new Tellers({
         firstName: req.params.firstname,
-        lastName: req.params.lastname
+        lastName: req.params.lastname,
+        login: req.params.login,
+        password: req.params.password
     });
 
     teller.save(function (err) {
@@ -63,6 +65,8 @@ server.post('/api/tellers/:teller_id/clients', function (req, res, next) {
         var client1 = new Clients({
             firstName: req.params.firstname,
             lastName: req.params.lastname,
+            login: req.params.login,
+            password: req.params.password,
             currentAddress: " ",
             teller: req.params.teller_id
         });
@@ -94,6 +98,32 @@ server.post('/api/clients/:client_id/transactions', function (req, res, next) {
 
             res.send(201, newTR);
         });
+    next();
+});
+
+//POST auth, return user entity
+
+server.post('api/auth', function (req, res, next) {
+    console.log(req.params.account);
+    if (req.params.account == 'teller') {
+        Tellers.
+        findOne({}).
+        where('login').equals(req.params.login).
+        where('password').equals(req.params.password).
+        exec (function (err, teller) {
+            res.send(200, teller);
+        });
+    } else if (req.params.account == 'client') {
+        Clients.
+        findOne({}).
+        where('login').equals(req.params.login).
+        where('password').equals(req.params.password).
+        exec (function (err, client) {
+            res.send(200, client);
+        });
+    } else {
+        res.send(404, req.params);
+    }
     next();
 });
 
