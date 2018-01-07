@@ -68,7 +68,7 @@ server.post('/api/tellers/:teller_id/clients', function (req, res, next) {
             login: req.params.login,
             password: req.params.password,
             currentAddress: req.params.address,
-            contactInfo: {'email': req.params.email, 'tel': req.params.telephone},
+            contactInfo: {'email': req.params.email, 'telephone': req.params.tel},
             teller: req.params.teller_id
         });
 
