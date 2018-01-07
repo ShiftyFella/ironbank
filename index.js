@@ -91,7 +91,7 @@ server.post('/api/tellers/:teller_id/clients', function (req, res, next) {
 server.post('/api/clients/:client_id/transactions', function (req, res, next) {
     Clients.findOneAndUpdate({_id: req.params.client_id}, {$push: {"transactions":
             {"_id": new mongoose.Types.ObjectId(),
-                "transactionName": req.params.transaction_name,
+                "transactionName": req.params.transactionName,
                 "transactionDate": Date.now()}}},
         {new: true},
         function(err, newTR) {
