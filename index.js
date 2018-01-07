@@ -67,7 +67,8 @@ server.post('/api/tellers/:teller_id/clients', function (req, res, next) {
             lastName: req.params.lastname,
             login: req.params.login,
             password: req.params.password,
-            currentAddress: " ",
+            currentAddress: req.params.address,
+            contactInfo: {'email': req.params.email, 'tel': req.params.telephone},
             teller: req.params.teller_id
         });
 
@@ -167,7 +168,7 @@ server.get('/api/tellers/:teller_id/clients/:client_id', function (req, res, nex
     Clients.
     findOne({ _id: req.params.client_id }).
     where('teller').equals(req.params.teller_id).
-    select('firstName lastName currentAddress contactInfo accountStatus').
+    //select('firstName lastName currentAddress contactInfo accountStatus').
     exec (function (err, client) {
         res.send(client);
     });
