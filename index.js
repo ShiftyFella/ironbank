@@ -202,7 +202,7 @@ server.get('/api/clients', function (req, res, next) {
 //GET client info by id
 server.get('/api/clients/:client_id', function (req, res, next) {
     Clients.
-    find({ _id: req.params.client_id}).
+    findOne({ _id: req.params.client_id}).
     populate('teller', 'firstName lastName').
     exec (function (err, client) {
         res.send(client);
